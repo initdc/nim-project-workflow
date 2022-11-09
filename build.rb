@@ -2,16 +2,16 @@ require "./version"
 require "./get-version"
 require "./zig-linkers"
 
-PROGRAM = "v-demo"
+PROGRAM = "nim_demo"
 # VERSION = "v0.0.1"
-BUILD_CMD = "v ."
-OUTPUT_ARG = "-o"
-RELEASE_BUILD = false
-RELEASE_ARG = RELEASE_BUILD == true ? "-prod" : ""
+BUILD_CMD = "nimble build" # --verbose
+OUTPUT_ARG = "-o:"
+RELEASE_BUILD = true
+RELEASE_ARG = RELEASE_BUILD == true ? "-d:release" : ""
 RELEASE = RELEASE_BUILD == true ? "release" : "debug"
 # used in this way:
 # BUILD_CMD RELEASE_ARG TARGET_ARG OUTPUT_ARG OUTPUT_PATH
-TEST_CMD = "v test ."
+TEST_CMD = "nimble test"
 
 ZIG_CC = "zig cc -target"
 
@@ -188,26 +188,35 @@ def notExistsThen(cmd, dest, src)
     end
 end
 
+`echo > nim.cfg`
 for target in targets
     tp_array = target.split("-")
     architecture = tp_array[0]
     os = tp_array[1]
+    abi = tp_array.last
+
     windows = os == "windows"
-    
+    architecture =  architecture == "x86_64" ? "amd64" : architecture
+    architecture =  architecture == "aarch64" ? "arm64" : architecture
+
     program_bin = !windows ? PROGRAM : "#{PROGRAM}.exe"
     target_bin = !windows ? target : "#{target}.exe"
 
     gen_zig_linkers target, ZIG_CC
-    target_arg = "-os #{os} -cc=#{ZIG_LINKERS_DIR}/#{target}"
+    gen_nim_cfg architecture, os, abi, target
+
+    target_arg = "--cpu:#{architecture} --os:#{os}"
+    target_arg = !windows ? target_arg : "--cpu:#{architecture} -d:mingw"
 
     dir = "#{TARGET_DIR}/#{target}/#{RELEASE}"
     `mkdir -p #{dir}`
 
-    cmd = "#{BUILD_CMD} #{RELEASE_ARG} #{target_arg} #{OUTPUT_ARG} #{dir}/#{program_bin}"
+    cmd = "#{BUILD_CMD} #{RELEASE_ARG} #{target_arg}"
     puts cmd
-    system cmd
-
-    existsThen "ln", "#{TARGET_DIR}/#{target}/#{RELEASE}/#{program_bin}", "#{UPLOAD_DIR}/#{target_bin}"
+    build_result = system cmd
+    
+    `mv #{program_bin} #{dir}` if build_result
+    existsThen "ln", "#{dir}/#{program_bin}", "#{UPLOAD_DIR}/#{target_bin}"
 end
 
 GO_ZIG.each do |target_platform, targets|
@@ -256,10 +265,10 @@ GO_ZIG.each do |target_platform, targets|
     end
 end
 
-# cmd = "file #{UPLOAD_DIR}/**"
-# IO.popen(cmd) do |r|
-#         puts r.readlines
-# end
+cmd = "file #{UPLOAD_DIR}/**"
+IO.popen(cmd) do |r|
+        puts r.readlines
+end
 
 file = "#{UPLOAD_DIR}/BINARYS"
 IO.write(file, "")

@@ -1,13 +1,6 @@
-# Binaries for programs and plugins
-main
-vlang-project-workflow
-v-demo
-*.exe
-*.exe~
-*.so
-*.dylib
-*.dll
-vls.log
+nim_demo
+nim_demo.exe
+nim.cfg
 
 target
 upload

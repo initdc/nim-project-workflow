@@ -5,8 +5,8 @@ require "./version"
 
 REGISTRY = "docker.io"
 DOCKER_USER = "initdc"
-DOCKER_IMAGE = "zig-demo"
-BINARY = "zig-demo"
+DOCKER_IMAGE = "nim-demo"
+BINARY = "nim-demo"
 # VERSION = "v0.0.1"
 LATEST = "scratch"
 # the base of docker `FROM scratch`, if not, set: { false | "" }
