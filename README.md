@@ -1,12 +1,12 @@
-# [Zig Project Workflow](https://github.com/initdc/zig-project-workflow)
+# [Nim Project Workflow](https://github.com/initdc/nim-project-workflow)
 
-> Project written by zig, you just need build once time.
+> Project written by nim, you just need build once time.
 
 ## Build on Linux Host
 
 1. deps 
 
-    - zig
+    - nim
     - ruby
     - tree
     - sha256sum
