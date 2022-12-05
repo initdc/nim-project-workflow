@@ -31,7 +31,9 @@ jobs:
         with:
           version: ${{ env.NIM_VERSION }}
       - name: Build Artifact
-        run: ruby build.rb test --run-test
+        run: |
+          ruby build.rb --install-cc
+          ruby build.rb test --run-test
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
