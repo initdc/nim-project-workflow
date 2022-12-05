@@ -1,5 +1,6 @@
 nim_demo
 nim_demo.exe
+nim_demo.pdb
 nim.cfg
 
 target

@@ -10,7 +10,7 @@ RELEASE_BUILD = true
 RELEASE_ARG = RELEASE_BUILD == true ? "-d:release" : ""
 RELEASE = RELEASE_BUILD == true ? "release" : "debug"
 # used in this way:
-# BUILD_CMD RELEASE_ARG TARGET_ARG OUTPUT_ARG OUTPUT_PATH
+# CC_ENV BUILD_CMD RELEASE_ARG TARGET_ARG OUTPUT_ARG OUTPUT_PATH
 TEST_CMD = "nimble test"
 
 ZIG_CC = "zig cc -target"
@@ -50,63 +50,63 @@ ARM = ["5", "6", "7"]
 
 # zig targets | jq -r .libc
 TARGETS = [
-    "aarch64_be-linux-gnu",
-    "aarch64_be-linux-musl",
-    "aarch64_be-windows-gnu",
+    # "aarch64_be-linux-gnu",
+    # "aarch64_be-linux-musl",
+    # "aarch64_be-windows-gnu",
     "aarch64-linux-gnu",
     "aarch64-linux-musl",
     "aarch64-windows-gnu",
     "aarch64-macos-none",
-    "armeb-linux-gnueabi",
-    "armeb-linux-gnueabihf",
-    "armeb-linux-musleabi",
-    "armeb-linux-musleabihf",
-    "armeb-windows-gnu",
+    # "armeb-linux-gnueabi",
+    # "armeb-linux-gnueabihf",
+    # "armeb-linux-musleabi",
+    # "armeb-linux-musleabihf",
+    # "armeb-windows-gnu",
     "arm-linux-gnueabi",
     "arm-linux-gnueabihf",
     "arm-linux-musleabi",
     "arm-linux-musleabihf",
-    "thumb-linux-gnueabi",
-    "thumb-linux-gnueabihf",
-    "thumb-linux-musleabi",
-    "thumb-linux-musleabihf",
-    "arm-windows-gnu",
-    "csky-linux-gnueabi",
-    "csky-linux-gnueabihf",
+    # "thumb-linux-gnueabi",
+    # "thumb-linux-gnueabihf",
+    # "thumb-linux-musleabi",
+    # "thumb-linux-musleabihf",
+    # "arm-windows-gnu",
+    # "csky-linux-gnueabi",
+    # "csky-linux-gnueabihf",
     "i386-linux-gnu",
     "i386-linux-musl",
     "i386-windows-gnu",
-    "m68k-linux-gnu",
-    "m68k-linux-musl",
-    "mips64el-linux-gnuabi64",
-    "mips64el-linux-gnuabin32",
-    "mips64el-linux-musl",
-    "mips64-linux-gnuabi64",
-    "mips64-linux-gnuabin32",
-    "mips64-linux-musl",
-    "mipsel-linux-gnueabi",
-    "mipsel-linux-gnueabihf",
-    "mipsel-linux-musl",
-    "mips-linux-gnueabi",
-    "mips-linux-gnueabihf",
-    "mips-linux-musl",
-    "powerpc64le-linux-gnu",
-    "powerpc64le-linux-musl",
-    "powerpc64-linux-gnu",
-    "powerpc64-linux-musl",
-    "powerpc-linux-gnueabi",
-    "powerpc-linux-gnueabihf",
-    "powerpc-linux-musl",
+    # "m68k-linux-gnu",
+    # "m68k-linux-musl",
+    # "mips64el-linux-gnuabi64",
+    # "mips64el-linux-gnuabin32",
+    # "mips64el-linux-musl",
+    # "mips64-linux-gnuabi64",
+    # "mips64-linux-gnuabin32",
+    # "mips64-linux-musl",
+    # "mipsel-linux-gnueabi",
+    # "mipsel-linux-gnueabihf",
+    # "mipsel-linux-musl",
+    # "mips-linux-gnueabi",
+    # "mips-linux-gnueabihf",
+    # "mips-linux-musl",
+    # "powerpc64le-linux-gnu",
+    # "powerpc64le-linux-musl",
+    # "powerpc64-linux-gnu",
+    # "powerpc64-linux-musl",
+    # "powerpc-linux-gnueabi",
+    # "powerpc-linux-gnueabihf",
+    # "powerpc-linux-musl",
     "riscv64-linux-gnu",
     "riscv64-linux-musl",
-    "s390x-linux-gnu",
-    "s390x-linux-musl",
-    "sparc-linux-gnu",
-    "sparc64-linux-gnu",
-    "wasm32-freestanding-musl",
-    "wasm32-wasi-musl",
+    # "s390x-linux-gnu",
+    # "s390x-linux-musl",
+    # "sparc-linux-gnu",
+    # "sparc64-linux-gnu",
+    # "wasm32-freestanding-musl",
+    # "wasm32-wasi-musl",
     "x86_64-linux-gnu",
-    "x86_64-linux-gnux32",
+    # "x86_64-linux-gnux32",
     "x86_64-linux-musl",
     "x86_64-windows-gnu",
     "x86_64-macos-none",
@@ -114,25 +114,17 @@ TARGETS = [
 
 TEST_TARGETS = [
     "aarch64-linux-gnu",
-    "aarch64-linux-musl",
     "aarch64-windows-gnu",
     "aarch64-macos-none",
-    "arm-linux-gnueabi",
-    "arm-linux-gnueabihf",
-    "arm-linux-musleabi",
-    "arm-linux-musleabihf",
+    "riscv64-linux-gnu",
     "x86_64-linux-gnu",
-    "x86_64-linux-gnux32",
-    "x86_64-linux-musl",
     "x86_64-windows-gnu",
     "x86_64-macos-none",
 ]
 
 LESS_TARGETS = [
     "aarch64-linux-gnu",
-    "aarch64-linux-musl",
     "x86_64-linux-gnu",
-    "x86_64-linux-musl",
 ]
 
 version = get_version ARGV, 0, VERSION
@@ -188,7 +180,6 @@ def notExistsThen(cmd, dest, src)
     end
 end
 
-`echo > nim.cfg`
 for target in targets
     tp_array = target.split("-")
     architecture = tp_array[0]
@@ -203,15 +194,15 @@ for target in targets
     target_bin = !windows ? target : "#{target}.exe"
 
     gen_zig_linkers target, ZIG_CC
-    gen_nim_cfg architecture, os, abi, target
+    # gen_nim_cfg architecture, os, abi, target
 
-    target_arg = "--cpu:#{architecture} --os:#{os}"
-    target_arg = !windows ? target_arg : "--cpu:#{architecture} -d:mingw"
+    target_arg = "--cpu:#{architecture} --os:#{os} --cc:env"
+    target_arg = !windows ? target_arg : "--cpu:#{architecture} -d:mingw --cc:env"
 
     dir = "#{TARGET_DIR}/#{target}/#{RELEASE}"
     `mkdir -p #{dir}`
 
-    cmd = "#{BUILD_CMD} #{RELEASE_ARG} #{target_arg}"
+    cmd = "CC=#{ZIG_LINKERS_DIR}/#{target} #{BUILD_CMD} #{RELEASE_ARG} #{target_arg}"
     puts cmd
     build_result = system cmd
     
@@ -241,6 +232,7 @@ GO_ZIG.each do |target_platform, targets|
                     end
                 end
             else
+                target = targets
                 existsThen "ln", "#{TARGET_DIR}/#{target}/#{RELEASE}/#{PROGRAM}", "#{docker}/#{PROGRAM}"
             end
         end
@@ -260,6 +252,7 @@ GO_ZIG.each do |target_platform, targets|
                 end
             end
         else
+            target = targets
             existsThen "ln", "#{TARGET_DIR}/#{target}/#{RELEASE}/#{PROGRAM}", "#{docker}/#{PROGRAM}"
         end
     end
@@ -267,7 +260,7 @@ end
 
 cmd = "file #{UPLOAD_DIR}/**"
 IO.popen(cmd) do |r|
-        puts r.readlines
+    puts r.readlines
 end
 
 file = "#{UPLOAD_DIR}/BINARYS"
