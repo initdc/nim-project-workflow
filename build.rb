@@ -78,25 +78,25 @@ TARGETS = [
     "i386-windows-gnu",
     # "m68k-linux-gnu",
     # "m68k-linux-musl",
-    # "mips64el-linux-gnuabi64",
-    # "mips64el-linux-gnuabin32",
-    # "mips64el-linux-musl",
-    # "mips64-linux-gnuabi64",
-    # "mips64-linux-gnuabin32",
-    # "mips64-linux-musl",
-    # "mipsel-linux-gnueabi",
-    # "mipsel-linux-gnueabihf",
-    # "mipsel-linux-musl",
-    # "mips-linux-gnueabi",
-    # "mips-linux-gnueabihf",
-    # "mips-linux-musl",
-    # "powerpc64le-linux-gnu",
-    # "powerpc64le-linux-musl",
-    # "powerpc64-linux-gnu",
-    # "powerpc64-linux-musl",
-    # "powerpc-linux-gnueabi",
-    # "powerpc-linux-gnueabihf",
-    # "powerpc-linux-musl",
+    "mips64el-linux-gnuabi64",
+    "mips64el-linux-gnuabin32",
+    "mips64el-linux-musl",
+    "mips64-linux-gnuabi64",
+    "mips64-linux-gnuabin32",
+    "mips64-linux-musl",
+    "mipsel-linux-gnueabi",
+    "mipsel-linux-gnueabihf",
+    "mipsel-linux-musl",
+    "mips-linux-gnueabi",
+    "mips-linux-gnueabihf",
+    "mips-linux-musl",
+    "powerpc64le-linux-gnu",
+    "powerpc64le-linux-musl",
+    "powerpc64-linux-gnu",
+    "powerpc64-linux-musl",
+    "powerpc-linux-gnueabi",
+    "powerpc-linux-gnueabihf",
+    "powerpc-linux-musl",
     "riscv64-linux-gnu",
     "riscv64-linux-musl",
     # "s390x-linux-gnu",
@@ -187,8 +187,14 @@ for target in targets
     abi = tp_array.last
 
     windows = os == "windows"
-    architecture =  architecture == "x86_64" ? "amd64" : architecture
-    architecture =  architecture == "aarch64" ? "arm64" : architecture
+
+    nim_arch = architecture
+    nim_arch = "amd64" if architecture == "x86_64"
+    nim_arch = "arm64" if architecture == "aarch64"
+    nim_arch = "powerpc64el" if architecture == "powerpc64le"
+    nim_os = os
+
+    windows_amd64 = windows && (nim_arch == "amd64")
 
     program_bin = !windows ? PROGRAM : "#{PROGRAM}.exe"
     target_bin = !windows ? target : "#{target}.exe"
@@ -196,9 +202,9 @@ for target in targets
     gen_zig_linkers target, ZIG_CC
     # gen_nim_cfg architecture, os, abi, target
 
-    target_arg = "--cpu:#{architecture} --os:#{os} --cc:env"
-    target_arg = !windows ? target_arg : "--cpu:#{architecture} -d:mingw --cc:env"
-
+    target_arg = "--cpu:#{nim_arch} --os:#{nim_os} --cc:env"
+    target_arg = !windows_amd64 ? target_arg : "--cpu:#{nim_arch} -d:mingw --cc:env"
+    
     dir = "#{TARGET_DIR}/#{target}/#{RELEASE}"
     `mkdir -p #{dir}`
 
