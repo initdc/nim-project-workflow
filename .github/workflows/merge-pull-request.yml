@@ -1,7 +1,7 @@
 name: Merge or Pull requests
 
 env:
-  ZIG_VERSION: master
+  ZIG_VERSION: 0.10.0
   NIM_VERSION: binary:stable
 
 on:
